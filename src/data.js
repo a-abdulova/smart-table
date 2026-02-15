@@ -2,7 +2,26 @@ import { makeIndex } from "./lib/utils.js";
 
 const BASE_URL = "https://webinars.webdev.education-services.ru/sp7-api";
 
-export function initData(_sourceData) {
+export function initData(sourceData) {
+  const localSellers = makeIndex(
+    sourceData.sellers,
+    "id",
+    (v) => `${v.first_name} ${v.last_name}`,
+  );
+  const localCustomers = makeIndex(
+    sourceData.customers,
+    "id",
+    (v) => `${v.first_name} ${v.last_name}`,
+  );
+  
+  const localItems = sourceData.purchase_records.map((item) => ({
+    id: item.receipt_id,
+    date: item.date,
+    seller: localSellers[item.seller_id],
+    customer: localCustomers[item.customer_id],
+    total: item.total_amount,
+  }));
+
   let sellers;
   let customers;
   let lastResult;
